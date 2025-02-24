@@ -4,6 +4,14 @@ import requests
 import plotly.express as px
 import os
 
+# Ensure required packages are installed
+try:
+    import plotly
+except ImportError:
+    import subprocess
+    subprocess.run(["pip", "install", "plotly"])
+    import plotly.express as px
+
 # Alpha Vantage API Key from environment variables
 API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 BASE_URL = "https://www.alphavantage.co/query"
