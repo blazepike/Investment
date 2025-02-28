@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-import plotly.express as px
+import plotly.graph_objects as go
 import os
 
 # Ensure required packages are installed
@@ -10,7 +10,7 @@ try:
 except ImportError:
     import subprocess
     subprocess.run(["pip", "install", "plotly"])
-    import plotly.express as px
+    import plotly.graph_objects as go
 
 # Alpha Vantage API Key from environment variables
 API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
@@ -74,14 +74,15 @@ if not df_portfolio.empty:
     st.metric("Total Portfolio Value", f"${total_value:,.2f}")
     
     # Portfolio Breakdown
-    fig_pie = px.pie(df_portfolio, names="Symbol", values="Value", title="Portfolio Allocation")
+    fig_pie = go.Figure(data=[go.Pie(labels=df_portfolio["Symbol"], values=df_portfolio["Value"], title="Portfolio Allocation")])
     st.plotly_chart(fig_pie)
 
     # Fetch sector information dynamically
     industries = {row["Symbol"]: fetch_company_overview(row["Symbol"]).get("Sector", "Unknown") for _, row in df_portfolio.iterrows()}
     df_portfolio["Industry"] = df_portfolio["Symbol"].map(industries)
     
-    fig_bar = px.bar(df_portfolio, x="Industry", y="Value", title="Sector Exposure", text_auto=True)
+    fig_bar = go.Figure(data=[go.Bar(x=df_portfolio["Industry"], y=df_portfolio["Value"], text=df_portfolio["Value"], textposition='auto')])
+    fig_bar.update_layout(title="Sector Exposure")
     st.plotly_chart(fig_bar)
 
 # Company Health Analysis
